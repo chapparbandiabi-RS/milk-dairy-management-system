@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Milk Dairy Management</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1976d2,
+                    #64b5f6
+                );
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 400px;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            text-align: center;
+            color: #1976d2;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #1976d2;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+
+            background: #1976d2;
+            color: white;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #1565c0;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #888;
+            font-size: 13px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="login-container">
+
+
+        <div class="logo">
+            🥛
+        </div>
+
+
+        <div class="title">
+            Milk Dairy
+        </div>
+
+
+        <div class="subtitle">
+            Dairy Management System
+        </div>
+
+
+        <form id="loginForm">
+
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-btn">
+
+                Login
+
+            </button>
+
+
+            <div
+                id="errorMessage"
+                class="error-message">
+
+                Invalid username or password
+
+            </div>
+
+
+        </form>
+
+
+        <div class="footer">
+
+            © 2026 Milk Dairy Management System
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        // ==========================================
+        // LOGIN
+        // ==========================================
+
+        document
+            .getElementById("loginForm")
+            .addEventListener(
+                "submit",
+                function(event) {
+
+                    event.preventDefault();
+
+
+                    const username =
+                        document
+                            .getElementById("username")
+                            .value
+                            .trim();
+
+
+                    const password =
+                        document
+                            .getElementById("password")
+                            .value;
+
+
+                    // ==================================
+                    // LOGIN CREDENTIALS
+                    // ==================================
+
+                    if (
+                        username === "admin" &&
+                        password === "admin123"
+                    ) {
+
+                        // IMPORTANT:
+                        // login.html and otp.html
+                        // are both inside pages folder.
+
+                        window.location.href =
+                            "otp.html";
+
+                    }
+
+                    else {
+
+                        document
+                            .getElementById(
+                                "errorMessage"
+                            )
+                            .style.display =
+                                "block";
+
+                    }
+
+                }
+            );
+
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Daily Milk Entry</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f9;
+        }
+
+        .header {
+            background: #1e88e5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input:disabled {
+            background: #eeeeee;
+            cursor: not-allowed;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #1e88e5;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #1565c0;
+        }
+
+        .back-btn {
+            background: #555;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #333;
+        }
+
+        .cancel-btn {
+            background: #777;
+            margin-left: 8px;
+        }
+
+        .cancel-btn:hover {
+            background: #555;
+        }
+
+        .edit-btn {
+            background: #f9a825;
+            padding: 8px 14px;
+            margin: 0;
+        }
+
+        .edit-btn:hover {
+            background: #f57f17;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1e88e5;
+            color: white;
+        }
+
+        .status-box {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 7px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .status-present {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #43a047;
+        }
+
+        .status-absent {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #e53935;
+        }
+
+        .status-not-marked {
+            background: #fff8e1;
+            color: #f57f17;
+            border: 1px solid #ffb300;
+        }
+
+        .zero-message {
+            color: #c62828;
+            font-weight: bold;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .edit-mode {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 15px;
+            display: none;
+            font-weight: bold;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        @media (max-width: 700px) {
+
+            th,
+            td {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            🥛 Milk Dairy Management
+        </h1>
+
+        <p>
+            Daily Milk Collection
+        </p>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <!-- BACK BUTTON -->
+
+        <button
+            class="back-btn"
+            onclick="goBack()">
+
+            ← Back to Dashboard
+
+        </button>
+
+
+        <!-- ENTRY BOX -->
+
+        <div class="box">
+
+            <h2>
+                Daily Milk Entry
+            </h2>
+
+
+            <!-- EDIT MODE MESSAGE -->
+
+            <div
+                id="editMode"
+                class="edit-mode">
+
+                ✏️ You are editing an existing milk entry.
+
+            </div>
+
+
+            <!-- CUSTOMER -->
+
+            <label>
+                Customer
+            </label>
+
+            <select
+                id="customer"
+                onchange="checkAttendance()">
+
+                <option value="">
+                    Select Customer
+                </option>
+
+            </select>
+
+
+            <!-- DATE -->
+
+            <label>
+                Date
+            </label>
+
+            <input
+                type="date"
+                id="date"
+                onchange="checkAttendance()">
+
+
+            <!-- ATTENDANCE -->
+
+            <div
+                id="attendanceStatus"
+                class="status-box">
+            </div>
+
+
+            <!-- MORNING -->
+
+            <label>
+                Morning Milk (Liters)
+            </label>
+
+            <input
+                type="number"
+                id="morning"
+                step="0.1"
+                min="0"
+                placeholder="Example: 2">
+
+
+            <!-- EVENING -->
+
+            <label>
+                Evening Milk (Liters)
+            </label>
+
+            <input
+                type="number"
+                id="evening"
+                step="0.1"
+                min="0"
+                placeholder="Example: 1">
+
+
+            <!-- ABSENT MESSAGE -->
+
+            <div
+                id="zeroMessage"
+                class="zero-message">
+
+                🔴 Customer is absent.
+                Milk quantity will be saved as 0 L.
+
+            </div>
+
+
+            <!-- SAVE BUTTON -->
+
+            <button
+                id="saveButton"
+                onclick="saveMilkEntry()">
+
+                💾 Save Milk Entry
+
+            </button>
+
+
+            <!-- CANCEL EDIT -->
+
+            <button
+                id="cancelButton"
+                class="cancel-btn"
+                onclick="cancelEdit()"
+                style="display:none;">
+
+                ❌ Cancel Edit
+
+            </button>
+
+
+        </div>
+
+
+        <!-- RECORDS -->
+
+        <div class="box">
+
+            <h2>
+                Milk Collection Records
+            </h2>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Customer</th>
+
+                        <th>Date</th>
+
+                        <th>Morning</th>
+
+                        <th>Evening</th>
+
+                        <th>Total Liters</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="milkTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    </div>
+
+
+    <script>
+
+
+        // ==========================================
+        // DATABASE
+        // ==========================================
+
+        const db = require("../database");
+
+
+        // ==========================================
+        // EDIT ID
+        // ==========================================
+
+        let editingId = null;
+
+
+        // ==========================================
+        // GET TODAY
+        // ==========================================
+
+        function getToday() {
+
+            const now = new Date();
+
+            const year =
+                now.getFullYear();
+
+            const month =
+                String(
+                    now.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    now.getDate()
+                ).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+
+        }
+
+
+        // ==========================================
+        // LOAD CUSTOMERS
+        // ==========================================
+
+        function loadCustomers() {
+
+            db.all(
+                `
+                SELECT *
+                FROM customers
+                ORDER BY name
+                `,
+                [],
+                function(err, rows) {
+
+                    if (err) {
+
+                        console.log(
+                            "Customer error:",
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    const select =
+                        document.getElementById(
+                            "customer"
+                        );
+
+
+                    select.innerHTML = `
+                        <option value="">
+                            Select Customer
+                        </option>
+                    `;
+
+
+                    rows.forEach(
+                        function(customer) {
+
+                            const option =
+                                document.createElement(
+                                    "option"
+                                );
+
+                            option.value =
+                                customer.id;
+
+                            option.textContent =
+                                customer.name;
+
+                            select.appendChild(
+                                option
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // CHECK ATTENDANCE
+        // ==========================================
+
+        function checkAttendance() {
+
+            const customer =
+                document.getElementById(
+                    "customer"
+                ).value;
+
+
+            const date =
+                document.getElementById(
+                    "date"
+                ).value;
+
+
+            const statusBox =
+                document.getElementById(
+                    "attendanceStatus"
+                );
+
+
+            const zeroMessage =
+                document.getElementById(
+                    "zeroMessage"
+                );
+
+
+            const morning =
+                document.getElementById(
+                    "morning"
+                );
+
+
+            const evening =
+                document.getElementById(
+                    "evening"
+                );
+
+
+            statusBox.style.display =
+                "none";
+
+
+            zeroMessage.style.display =
+                "none";
+
+
+            morning.disabled = false;
+
+            evening.disabled = false;
+
+
+            if (
+                customer === "" ||
+                date === ""
+            ) {
+
+                return;
+
+            }
+
+
+            db.get(
+                `
+                SELECT status
+                FROM attendance
+                WHERE customer_id = ?
+                AND date = ?
+                `,
+                [
+                    customer,
+                    date
+                ],
+                function(err, row) {
+
+                    if (err) {
+
+                        console.log(
+                            "Attendance check error:",
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ----------------------------------
+                    // ATTENDANCE NOT MARKED
+                    // ----------------------------------
+
+                    if (!row) {
+
+                        statusBox.style.display =
+                            "block";
+
+                        statusBox.className =
+                            "status-box status-not-marked";
+
+                        statusBox.innerText =
+                            "⚠️ Attendance not marked for this customer on this date.";
+
+                        morning.disabled = true;
+
+                        evening.disabled = true;
+
+                        return;
+
+                    }
+
+
+                    // ----------------------------------
+                    // PRESENT
+                    // ----------------------------------
+
+                    if (
+                        row.status === "Present"
+                    ) {
+
+                        statusBox.style.display =
+                            "block";
+
+                        statusBox.className =
+                            "status-box status-present";
+
+                        statusBox.innerText =
+                            "🟢 Present — Milk entry is allowed.";
+
+                        morning.disabled =
+                            false;
+
+                        evening.disabled =
+                            false;
+
+                    }
+
+
+                    // ----------------------------------
+                    // ABSENT
+                    // ----------------------------------
+
+                    else if (
+                        row.status === "Absent"
+                    ) {
+
+                        statusBox.style.display =
+                            "block";
+
+                        statusBox.className =
+                            "status-box status-absent";
+
+                        statusBox.innerText =
+                            "🔴 Absent — Milk quantity is 0 L.";
+
+                        zeroMessage.style.display =
+                            "block";
+
+
+                        morning.value = "0";
+
+                        evening.value = "0";
+
+
+                        morning.disabled = true;
+
+                        evening.disabled = true;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // SAVE / UPDATE MILK ENTRY
+        // ==========================================
+
+        function saveMilkEntry() {
+
+            const customer =
+                document.getElementById(
+                    "customer"
+                ).value;
+
+
+            const date =
+                document.getElementById(
+                    "date"
+                ).value;
+
+
+            if (
+                customer === "" ||
+                date === ""
+            ) {
+
+                alert(
+                    "Please select customer and date."
+                );
+
+                return;
+
+            }
+
+
+            // ======================================
+            // CHECK ATTENDANCE
+            // ======================================
+
+            db.get(
+                `
+                SELECT status
+                FROM attendance
+                WHERE customer_id = ?
+                AND date = ?
+                `,
+                [
+                    customer,
+                    date
+                ],
+                function(
+                    attendanceErr,
+                    attendanceRow
+                ) {
+
+                    if (attendanceErr) {
+
+                        alert(
+                            "Attendance error: " +
+                            attendanceErr.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (!attendanceRow) {
+
+                        alert(
+                            "⚠️ Please mark Present or Absent in Attendance first."
+                        );
+
+                        return;
+
+                    }
+
+
+                    let morning = 0;
+
+                    let evening = 0;
+
+
+                    // ==================================
+                    // ABSENT
+                    // ==================================
+
+                    if (
+                        attendanceRow.status ===
+                        "Absent"
+                    ) {
+
+                        morning = 0;
+
+                        evening = 0;
+
+                    }
+
+
+                    // ==================================
+                    // PRESENT
+                    // ==================================
+
+                    else {
+
+                        morning =
+                            parseFloat(
+                                document.getElementById(
+                                    "morning"
+                                ).value
+                            ) || 0;
+
+
+                        evening =
+                            parseFloat(
+                                document.getElementById(
+                                    "evening"
+                                ).value
+                            ) || 0;
+
+
+                        if (
+                            morning < 0 ||
+                            evening < 0
+                        ) {
+
+                            alert(
+                                "Milk quantity cannot be negative."
+                            );
+
+                            return;
+
+                        }
+
+                    }
+
+
+                    const total =
+                        morning + evening;
+
+
+                    // ==================================
+                    // EDIT EXISTING RECORD
+                    // ==================================
+
+                    if (editingId !== null) {
+
+                        db.run(
+                            `
+                            UPDATE milk_entries
+
+                            SET
+                                customer_id = ?,
+                                date = ?,
+                                morning = ?,
+                                evening = ?,
+                                total = ?
+
+                            WHERE id = ?
+                            `,
+                            [
+                                customer,
+                                date,
+                                morning,
+                                evening,
+                                total,
+                                editingId
+                            ],
+                            function(err) {
+
+                                if (err) {
+
+                                    alert(
+                                        "Error updating milk entry: " +
+                                        err.message
+                                    );
+
+                                    return;
+
+                                }
+
+
+                                alert(
+                                    "✅ Milk entry corrected successfully!"
+                                );
+
+
+                                cancelEdit();
+
+                                loadMilkEntries();
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ==================================
+                    // CHECK DUPLICATE
+                    // ==================================
+
+                    db.get(
+                        `
+                        SELECT id
+
+                        FROM milk_entries
+
+                        WHERE customer_id = ?
+
+                        AND date = ?
+                        `,
+                        [
+                            customer,
+                            date
+                        ],
+                        function(
+                            checkErr,
+                            existing
+                        ) {
+
+                            if (checkErr) {
+
+                                alert(
+                                    "Error checking milk entry: " +
+                                    checkErr.message
+                                );
+
+                                return;
+
+                            }
+
+
+                            // ==================================
+                            // EXISTING ENTRY
+                            // ==================================
+
+                            if (existing) {
+
+                                const confirmUpdate =
+                                    confirm(
+                                        "Milk entry already exists for this customer on this date.\n\nDo you want to update it?"
+                                    );
+
+
+                                if (!confirmUpdate) {
+
+                                    return;
+
+                                }
+
+
+                                db.run(
+                                    `
+                                    UPDATE milk_entries
+
+                                    SET
+                                        morning = ?,
+                                        evening = ?,
+                                        total = ?
+
+                                    WHERE id = ?
+                                    `,
+                                    [
+                                        morning,
+                                        evening,
+                                        total,
+                                        existing.id
+                                    ],
+                                    function(err) {
+
+                                        if (err) {
+
+                                            alert(
+                                                "Error updating milk entry: " +
+                                                err.message
+                                            );
+
+                                            return;
+
+                                        }
+
+
+                                        alert(
+                                            "✅ Milk entry updated successfully!"
+                                        );
+
+
+                                        clearForm();
+
+                                        loadMilkEntries();
+
+                                    }
+                                );
+
+                            }
+
+
+                            // ==================================
+                            // NEW ENTRY
+                            // ==================================
+
+                            else {
+
+                                db.run(
+                                    `
+                                    INSERT INTO milk_entries
+
+                                    (
+                                        customer_id,
+                                        date,
+                                        morning,
+                                        evening,
+                                        total
+                                    )
+
+                                    VALUES (?, ?, ?, ?, ?)
+                                    `,
+                                    [
+                                        customer,
+                                        date,
+                                        morning,
+                                        evening,
+                                        total
+                                    ],
+                                    function(err) {
+
+                                        if (err) {
+
+                                            alert(
+                                                "Error saving milk entry: " +
+                                                err.message
+                                            );
+
+                                            return;
+
+                                        }
+
+
+                                        alert(
+                                            "✅ Milk entry saved successfully!"
+                                        );
+
+
+                                        clearForm();
+
+                                        loadMilkEntries();
+
+                                    }
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // EDIT MILK ENTRY
+        // ==========================================
+
+        function editMilkEntry(id) {
+
+            db.get(
+                `
+                SELECT
+                    id,
+                    customer_id,
+                    date,
+                    morning,
+                    evening
+
+                FROM milk_entries
+
+                WHERE id = ?
+                `,
+                [id],
+                function(err, entry) {
+
+                    if (err) {
+
+                        alert(
+                            "Error loading entry: " +
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (!entry) {
+
+                        alert(
+                            "Milk entry not found."
+                        );
+
+                        return;
+
+                    }
+
+
+                    // Save ID being edited
+
+                    editingId =
+                        entry.id;
+
+
+                    // Set customer
+
+                    document.getElementById(
+                        "customer"
+                    ).value =
+                        entry.customer_id;
+
+
+                    // Set date
+
+                    document.getElementById(
+                        "date"
+                    ).value =
+                        entry.date;
+
+
+                    // Set milk quantities
+
+                    document.getElementById(
+                        "morning"
+                    ).value =
+                        entry.morning;
+
+
+                    document.getElementById(
+                        "evening"
+                    ).value =
+                        entry.evening;
+
+
+                    // Edit mode UI
+
+                    document.getElementById(
+                        "editMode"
+                    ).style.display =
+                        "block";
+
+
+                    document.getElementById(
+                        "saveButton"
+                    ).innerText =
+                        "💾 Update Milk Entry";
+
+
+                    document.getElementById(
+                        "cancelButton"
+                    ).style.display =
+                        "inline-block";
+
+
+                    // Check attendance
+
+                    checkAttendance();
+
+
+                    // Scroll to form
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // CANCEL EDIT
+        // ==========================================
+
+        function cancelEdit() {
+
+            editingId = null;
+
+
+            document.getElementById(
+                "editMode"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "saveButton"
+            ).innerText =
+                "💾 Save Milk Entry";
+
+
+            document.getElementById(
+                "cancelButton"
+            ).style.display =
+                "none";
+
+
+            clearForm();
+
+        }
+
+
+        // ==========================================
+        // CLEAR FORM
+        // ==========================================
+
+        function clearForm() {
+
+            document.getElementById(
+                "customer"
+            ).value = "";
+
+
+            document.getElementById(
+                "date"
+            ).value =
+                getToday();
+
+
+            document.getElementById(
+                "morning"
+            ).value = "";
+
+
+            document.getElementById(
+                "evening"
+            ).value = "";
+
+
+            document.getElementById(
+                "attendanceStatus"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "zeroMessage"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "morning"
+            ).disabled = false;
+
+
+            document.getElementById(
+                "evening"
+            ).disabled = false;
+
+        }
+
+
+        // ==========================================
+        // LOAD MILK RECORDS
+        // ==========================================
+
+        function loadMilkEntries() {
+
+            db.all(
+                `
+                SELECT
+
+                    milk_entries.id,
+
+                    milk_entries.customer_id,
+
+                    customers.name,
+
+                    milk_entries.date,
+
+                    milk_entries.morning,
+
+                    milk_entries.evening,
+
+                    milk_entries.total
+
+                FROM milk_entries
+
+                JOIN customers
+
+                ON milk_entries.customer_id =
+                   customers.id
+
+                ORDER BY
+                    milk_entries.date DESC,
+                    milk_entries.id DESC
+                `,
+                [],
+                function(err, rows) {
+
+                    if (err) {
+
+                        console.log(
+                            "Milk records error:",
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    const table =
+                        document.getElementById(
+                            "milkTable"
+                        );
+
+
+                    table.innerHTML = "";
+
+
+                    if (rows.length === 0) {
+
+                        table.innerHTML = `
+                            <tr>
+                                <td
+                                    colspan="7"
+                                    class="empty-message">
+
+                                    No milk records found.
+
+                                </td>
+                            </tr>
+                        `;
+
+                        return;
+
+                    }
+
+
+                    rows.forEach(
+                        function(entry) {
+
+                            table.innerHTML += `
+
+                                <tr>
+
+                                    <td>
+                                        ${entry.id}
+                                    </td>
+
+                                    <td>
+                                        ${entry.name}
+                                    </td>
+
+                                    <td>
+                                        ${entry.date}
+                                    </td>
+
+                                    <td>
+                                        ${entry.morning || 0} L
+                                    </td>
+
+                                    <td>
+                                        ${entry.evening || 0} L
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            ${entry.total || 0} L
+                                        </strong>
+                                    </td>
+
+                                    <td>
+
+                                        <button
+                                            class="edit-btn"
+                                            onclick="editMilkEntry(${entry.id})">
+
+                                            ✏️ Edit
+
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                            `;
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // BACK
+        // ==========================================
+
+        function goBack() {
+
+            window.location.href =
+                "../index.html";
+
+        }
+
+
+        // ==========================================
+        // START
+        // ==========================================
+
+        document.getElementById(
+            "date"
+        ).value =
+            getToday();
+
+
+        loadCustomers();
+
+        loadMilkEntries();
+
+
+    </script>
+
+
+</body>
+
+</html>

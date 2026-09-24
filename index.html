@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Milk Dairy Management</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f7f9;
+            color: #222;
+        }
+
+
+        /* ================= HEADER ================= */
+
+        .header {
+            background: #1e88e5;
+            color: white;
+            padding: 20px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+
+        .header-content {
+            text-align: left;
+        }
+
+
+        .header h1 {
+            font-size: 30px;
+        }
+
+
+        .header p {
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+
+        /* ================= ACCOUNT AREA ================= */
+
+        .account-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        .logged-user {
+            background: rgba(255,255,255,0.15);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+
+        .profile-btn {
+            background: white;
+            color: #1976d2;
+
+            padding: 10px 15px;
+
+            border: none;
+            border-radius: 8px;
+
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+        .profile-btn:hover {
+            background: #eeeeee;
+        }
+
+
+        .logout-btn {
+            background: #d32f2f;
+            color: white;
+
+            padding: 10px 15px;
+
+            border: none;
+            border-radius: 8px;
+
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+        .logout-btn:hover {
+            background: #b71c1c;
+        }
+
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            padding: 30px;
+        }
+
+
+        /* ================= DASHBOARD CARDS ================= */
+
+        .cards {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .card {
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 10px
+                rgba(0,0,0,0.1);
+
+        }
+
+
+        .card h3 {
+
+            color: #666;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .card p {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #1e88e5;
+
+        }
+
+
+        /* ================= WELCOME ================= */
+
+        .welcome {
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 10px
+                rgba(0,0,0,0.1);
+
+        }
+
+
+        .welcome h2 {
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .welcome p {
+
+            color: #555;
+
+            line-height: 1.6;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        /* ================= BUTTONS ================= */
+
+        .button-container {
+
+            display: flex;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        button {
+
+            padding: 14px 22px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            color: white;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+        }
+
+
+        button:hover {
+
+            opacity: 0.9;
+
+        }
+
+
+        .customer-btn {
+            background: #43a047;
+        }
+
+
+        .milk-btn {
+            background: #1e88e5;
+        }
+
+
+        .payment-btn {
+            background: #fb8c00;
+        }
+
+
+        .bill-btn {
+            background: #8e44ad;
+        }
+
+
+        .attendance-btn {
+            background: #00897b;
+        }
+
+
+        .report-btn {
+            background: #6d4c41;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+
+            .cards {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .header {
+                text-align: center;
+                justify-content: center;
+            }
+
+            .header-content {
+                text-align: center;
+            }
+
+            .account-area {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+
+        <div class="header-content">
+
+            <h1>
+                🥛 Milk Dairy Management System
+            </h1>
+
+            <p>
+                Manage Customers, Milk Collection and Payments
+            </p>
+
+        </div>
+
+
+        <!-- ================= ACCOUNT ================= -->
+
+        <div class="account-area">
+
+
+            <div
+                class="logged-user"
+                id="loggedUser">
+
+                👤 Not Logged In
+
+            </div>
+
+
+            <button
+                class="profile-btn"
+                onclick="openProfile()">
+
+                👤 My Profile
+
+            </button>
+
+
+            <button
+                class="logout-btn"
+                onclick="logout()">
+
+                🚪 Logout
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ================= MAIN CONTAINER ================= -->
+
+    <div class="container">
+
+
+        <!-- ================= DASHBOARD CARDS ================= -->
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <h3>
+                    Total Customers
+                </h3>
+
+                <p id="totalCustomers">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Today's Milk
+                </h3>
+
+                <p id="todayMilk">
+                    0 L
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Today's Collection
+                </h3>
+
+                <p id="todayCollection">
+                    ₹0
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Pending Amount
+                </h3>
+
+                <p id="pendingAmount">
+                    ₹0
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================= WELCOME ================= -->
+
+        <div class="welcome">
+
+
+            <h2>
+                Welcome to Milk Dairy Management
+            </h2>
+
+
+            <p>
+
+                This application will help you
+                manage your dairy business,
+                customers, daily milk entries,
+                attendance, payments and monthly bills.
+
+            </p>
+
+
+            <div class="button-container">
+
+
+                <button
+                    class="customer-btn"
+                    onclick="openCustomers()">
+
+                    👥 Customer Management
+
+                </button>
+
+
+                <button
+                    class="milk-btn"
+                    onclick="openMilk()">
+
+                    🥛 Daily Milk Entry
+
+                </button>
+
+
+                <button
+                    class="attendance-btn"
+                    onclick="openAttendance()">
+
+                    📋 Attendance
+
+                </button>
+
+
+                <button
+                    class="payment-btn"
+                    onclick="openPayments()">
+
+                    💰 Payments
+
+                </button>
+
+
+                <button
+                    class="bill-btn"
+                    onclick="openBills()">
+
+                    🧾 Monthly Bills
+
+                </button>
+
+
+                <button
+                    class="report-btn"
+                    onclick="openReports()">
+
+                    📊 Customer Reports
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <script>
+
+
+        // ==========================================
+        // CHECK LOGIN
+        // ==========================================
+
+        function checkLogin() {
+
+
+            const loggedIn =
+                localStorage.getItem(
+                    "loggedIn"
+                );
+
+
+            const contact =
+                localStorage.getItem(
+                    "loggedInContact"
+                );
+
+
+            if (
+                loggedIn !== "true" ||
+                !contact
+            ) {
+
+                window.location.href =
+                    "pages/otp.html";
+
+                return false;
+
+            }
+
+
+            document.getElementById(
+                "loggedUser"
+            ).innerText =
+                "👤 " + contact;
+
+
+            return true;
+
+        }
+
+
+        // ==========================================
+        // OPEN PROFILE
+        // ==========================================
+
+        function openProfile() {
+
+            window.location.href =
+                "pages/profile.html";
+
+        }
+
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        function logout() {
+
+
+            const confirmLogout =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmLogout) {
+                return;
+            }
+
+
+            localStorage.removeItem(
+                "loggedIn"
+            );
+
+
+            localStorage.removeItem(
+                "loggedInContact"
+            );
+
+
+            localStorage.removeItem(
+                "loginTime"
+            );
+
+
+            window.location.href =
+                "pages/otp.html";
+
+        }
+
+
+        // ==========================================
+        // OPEN CUSTOMERS
+        // ==========================================
+
+        function openCustomers() {
+
+            window.location.href =
+                "pages/customers.html";
+
+        }
+
+
+        // ==========================================
+        // OPEN MILK
+        // ==========================================
+
+        function openMilk() {
+
+            window.location.href =
+                "pages/milk.html";
+
+        }
+
+
+        // ==========================================
+        // OPEN ATTENDANCE
+        // ==========================================
+
+        function openAttendance() {
+
+            window.location.href =
+                "pages/attendance.html";
+
+        }
+
+
+        // ==========================================
+        // OPEN PAYMENTS
+        // ==========================================
+
+        function openPayments() {
+
+            window.location.href =
+                "pages/payments.html";
+
+        }
+
+
+        // ==========================================
+        // OPEN BILLS
+        // ==========================================
+
+        function openBills() {
+
+            window.location.href =
+                "pages/bills.html";
+
+        }
+
+
+        // ==========================================
+        // OPEN REPORTS
+        // ==========================================
+
+        function openReports() {
+
+            window.location.href =
+                "pages/reports.html";
+
+        }
+
+
+        // ==========================================
+        // GET TODAY
+        // ==========================================
+
+        function getToday() {
+
+            const now = new Date();
+
+            const year =
+                now.getFullYear();
+
+            const month =
+                String(
+                    now.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    now.getDate()
+                ).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+
+        }
+
+
+        // ==========================================
+        // LOAD DASHBOARD
+        // ==========================================
+
+        function loadDashboard() {
+
+
+            // --------------------------------------
+            // TOTAL CUSTOMERS
+            // --------------------------------------
+
+            db.get(
+                `
+                SELECT COUNT(*) AS total
+                FROM customers
+                `,
+                [],
+                function(err, row) {
+
+                    if (err) {
+
+                        console.log(
+                            "Customer error:",
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    document.getElementById(
+                        "totalCustomers"
+                    ).innerText =
+                        row.total || 0;
+
+                }
+            );
+
+
+            // --------------------------------------
+            // TODAY'S MILK
+            // --------------------------------------
+
+            const today =
+                getToday();
+
+
+            db.get(
+                `
+                SELECT
+                    SUM(total) AS totalMilk
+
+                FROM milk_entries
+
+                WHERE date = ?
+                `,
+                [today],
+                function(err, row) {
+
+                    if (err) {
+
+                        console.log(
+                            "Milk error:",
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    const milk =
+                        Number(
+                            row.totalMilk
+                        ) || 0;
+
+
+                    document.getElementById(
+                        "todayMilk"
+                    ).innerText =
+                        milk.toFixed(2)
+                        + " L";
+
+                }
+            );
+
+
+            // --------------------------------------
+            // TODAY'S COLLECTION
+            // --------------------------------------
+
+            db.get(
+                `
+                SELECT
+                    SUM(
+                        milk_entries.total
+                        * customers.price
+                    ) AS collection
+
+                FROM milk_entries
+
+                JOIN customers
+
+                ON milk_entries.customer_id =
+                   customers.id
+
+                WHERE milk_entries.date = ?
+                `,
+                [today],
+                function(err, row) {
+
+                    if (err) {
+
+                        console.log(
+                            "Collection error:",
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    const collection =
+                        Number(
+                            row.collection
+                        ) || 0;
+
+
+                    document.getElementById(
+                        "todayCollection"
+                    ).innerText =
+                        "₹"
+                        + collection.toFixed(2);
+
+                }
+            );
+
+
+            // --------------------------------------
+            // PENDING AMOUNT
+            // --------------------------------------
+
+            db.all(
+                `
+                SELECT
+                    customers.id,
+                    customers.price
+
+                FROM customers
+                `,
+                [],
+                function(err, customers) {
+
+                    if (err) {
+
+                        console.log(
+                            "Pending customer error:",
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    let pendingTotal = 0;
+
+                    let completed = 0;
+
+
+                    if (
+                        customers.length === 0
+                    ) {
+
+                        document.getElementById(
+                            "pendingAmount"
+                        ).innerText =
+                            "₹0.00";
+
+                        return;
+
+                    }
+
+
+                    customers.forEach(
+                        function(customer) {
+
+
+                            db.get(
+                                `
+                                SELECT
+                                    SUM(total)
+                                    AS totalMilk
+
+                                FROM milk_entries
+
+                                WHERE customer_id = ?
+                                `,
+                                [customer.id],
+                                function(
+                                    milkErr,
+                                    milkRow
+                                ) {
+
+
+                                    if (milkErr) {
+
+                                        console.log(
+                                            milkErr.message
+                                        );
+
+                                        completed++;
+
+                                        return;
+
+                                    }
+
+
+                                    const totalMilk =
+                                        Number(
+                                            milkRow.totalMilk
+                                        ) || 0;
+
+
+                                    const milkAmount =
+                                        totalMilk
+                                        *
+                                        Number(
+                                            customer.price
+                                        );
+
+
+                                    db.get(
+                                        `
+                                        SELECT
+                                            SUM(amount)
+                                            AS totalPaid
+
+                                        FROM payments
+
+                                        WHERE customer_id = ?
+                                        `,
+                                        [customer.id],
+                                        function(
+                                            paymentErr,
+                                            paymentRow
+                                        ) {
+
+
+                                            if (
+                                                paymentErr
+                                            ) {
+
+                                                console.log(
+                                                    paymentErr.message
+                                                );
+
+                                                completed++;
+
+                                                return;
+
+                                            }
+
+
+                                            const totalPaid =
+                                                Number(
+                                                    paymentRow.totalPaid
+                                                ) || 0;
+
+
+                                            const pending =
+                                                milkAmount
+                                                -
+                                                totalPaid;
+
+
+                                            if (
+                                                pending > 0
+                                            ) {
+
+                                                pendingTotal
+                                                    += pending;
+
+                                            }
+
+
+                                            completed++;
+
+
+                                            if (
+                                                completed ===
+                                                customers.length
+                                            ) {
+
+                                                document
+                                                    .getElementById(
+                                                        "pendingAmount"
+                                                    )
+                                                    .innerText =
+                                                        "₹"
+                                                        +
+                                                        pendingTotal
+                                                            .toFixed(2);
+
+                                            }
+
+                                        }
+                                    );
+
+                                }
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // CONNECT DATABASE
+        // ==========================================
+
+        const db = require("./database");
+
+
+        // ==========================================
+        // START
+        // ==========================================
+
+        if (checkLogin()) {
+
+            loadDashboard();
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

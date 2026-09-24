@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile - Milk Dairy</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f7f9;
+        }
+
+
+        .header {
+            background: #1e88e5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+
+        .profile-card {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+
+            box-shadow:
+                0 3px 15px
+                rgba(0,0,0,0.1);
+        }
+
+
+        .profile-icon {
+            width: 100px;
+            height: 100px;
+
+            background: #e3f2fd;
+
+            border-radius: 50%;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 50px;
+
+            margin: 0 auto 20px;
+        }
+
+
+        h2 {
+            text-align: center;
+            color: #1e88e5;
+            margin-bottom: 30px;
+        }
+
+
+        .profile-row {
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .profile-label {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+
+        .profile-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+        }
+
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+
+        button {
+            flex: 1;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            color: white;
+
+            font-size: 15px;
+
+            cursor: pointer;
+        }
+
+
+        .back-btn {
+            background: #555;
+        }
+
+
+        .logout-btn {
+            background: #d32f2f;
+        }
+
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+
+        .loading {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            🥛 Milk Dairy Management
+        </h1>
+
+        <p>
+            My Profile
+        </p>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <div class="profile-card">
+
+
+            <div class="profile-icon">
+                👤
+            </div>
+
+
+            <h2>
+                My Account
+            </h2>
+
+
+            <div
+                id="loading"
+                class="loading">
+
+                Loading profile...
+
+            </div>
+
+
+            <div
+                id="profileContent"
+                style="display:none;">
+
+
+                <!-- NAME -->
+
+                <div class="profile-row">
+
+                    <div class="profile-label">
+                        Name
+                    </div>
+
+                    <div
+                        id="profileName"
+                        class="profile-value">
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONTACT -->
+
+                <div class="profile-row">
+
+                    <div class="profile-label">
+                        Mobile / Gmail
+                    </div>
+
+                    <div
+                        id="profileContact"
+                        class="profile-value">
+
+                    </div>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="profile-row">
+
+                    <div class="profile-label">
+                        Email
+                    </div>
+
+                    <div
+                        id="profileEmail"
+                        class="profile-value">
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACCOUNT CREATED -->
+
+                <div class="profile-row">
+
+                    <div class="profile-label">
+                        Account Created
+                    </div>
+
+                    <div
+                        id="profileCreated"
+                        class="profile-value">
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="button-container">
+
+                <button
+                    class="back-btn"
+                    onclick="goBack()">
+
+                    ← Dashboard
+
+                </button>
+
+
+                <button
+                    class="logout-btn"
+                    onclick="logout()">
+
+                    🚪 Logout
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        // ==========================================
+        // DATABASE
+        // ==========================================
+
+        const db = require("../database");
+
+
+        // ==========================================
+        // CHECK LOGIN
+        // ==========================================
+
+        function checkLogin() {
+
+
+            const loggedIn =
+                localStorage.getItem(
+                    "loggedIn"
+                );
+
+
+            const contact =
+                localStorage.getItem(
+                    "loggedInContact"
+                );
+
+
+            if (
+                loggedIn !== "true" ||
+                !contact
+            ) {
+
+                window.location.href =
+                    "otp.html";
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+
+
+        // ==========================================
+        // LOAD PROFILE
+        // ==========================================
+
+        function loadProfile() {
+
+
+            const contact =
+                localStorage.getItem(
+                    "loggedInContact"
+                );
+
+
+            if (!contact) {
+
+                return;
+
+            }
+
+
+            db.get(
+                `
+                SELECT
+                    id,
+                    name,
+                    contact,
+                    email,
+                    created_at
+
+                FROM accounts
+
+                WHERE contact = ?
+
+                LIMIT 1
+                `,
+                [contact],
+                function(err, account) {
+
+
+                    if (err) {
+
+                        console.log(
+                            "Profile error:",
+                            err.message
+                        );
+
+                        document.getElementById(
+                            "loading"
+                        ).innerText =
+                            "Error loading profile.";
+
+                        return;
+
+                    }
+
+
+                    if (!account) {
+
+                        document.getElementById(
+                            "loading"
+                        ).innerText =
+                            "Account information not found.";
+
+                        return;
+
+                    }
+
+
+                    // NAME
+
+                    document.getElementById(
+                        "profileName"
+                    ).innerText =
+                        account.name;
+
+
+                    // CONTACT
+
+                    document.getElementById(
+                        "profileContact"
+                    ).innerText =
+                        account.contact;
+
+
+                    // EMAIL
+
+                    document.getElementById(
+                        "profileEmail"
+                    ).innerText =
+                        account.email || "Not added";
+
+
+                    // CREATED DATE
+
+                    document.getElementById(
+                        "profileCreated"
+                    ).innerText =
+                        formatDate(
+                            account.created_at
+                        );
+
+
+                    // SHOW PROFILE
+
+                    document.getElementById(
+                        "loading"
+                    ).style.display =
+                        "none";
+
+
+                    document.getElementById(
+                        "profileContent"
+                    ).style.display =
+                        "block";
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // FORMAT DATE
+        // ==========================================
+
+        function formatDate(dateString) {
+
+
+            if (!dateString) {
+
+                return "Not available";
+
+            }
+
+
+            const date =
+                new Date(dateString);
+
+
+            return date.toLocaleString();
+
+        }
+
+
+        // ==========================================
+        // BACK
+        // ==========================================
+
+        function goBack() {
+
+            window.location.href =
+                "../index.html";
+
+        }
+
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        function logout() {
+
+
+            const confirmLogout =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmLogout) {
+
+                return;
+
+            }
+
+
+            localStorage.removeItem(
+                "loggedIn"
+            );
+
+
+            localStorage.removeItem(
+                "loggedInContact"
+            );
+
+
+            localStorage.removeItem(
+                "loginTime"
+            );
+
+
+            window.location.href =
+                "otp.html";
+
+        }
+
+
+        // ==========================================
+        // START
+        // ==========================================
+
+        if (checkLogin()) {
+
+            loadProfile();
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

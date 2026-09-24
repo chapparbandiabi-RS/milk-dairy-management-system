@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payments</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f7f9;
+            color: #222;
+        }
+
+        .header {
+            background: #1e88e5;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            margin-top: 8px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .back-button {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .back-button:hover {
+            background: #333;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .box h2 {
+            color: #1e88e5;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .save-button {
+            margin-top: 20px;
+            padding: 13px 25px;
+            background: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .save-button:hover {
+            background: #1565c0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #1e88e5;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        .delete-button {
+            background: #e53935;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background: #b71c1c;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .summary-card p {
+            color: #1e88e5;
+            font-size: 25px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            💰 Customer Payments
+        </h1>
+
+        <p>
+            Manage Customer Payments
+        </p>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <!-- BACK BUTTON -->
+
+        <button
+            class="back-button"
+            onclick="goBack()">
+
+            ← Back to Dashboard
+
+        </button>
+
+
+        <!-- ADD PAYMENT -->
+
+        <div class="box">
+
+            <h2>
+                Add Payment
+            </h2>
+
+
+            <label>
+                Customer
+            </label>
+
+
+            <select id="customer">
+
+                <option value="">
+                    Select Customer
+                </option>
+
+            </select>
+
+
+            <label>
+                Payment Date
+            </label>
+
+
+            <input
+                type="date"
+                id="paymentDate">
+
+
+            <label>
+                Amount Paid
+            </label>
+
+
+            <input
+                type="number"
+                id="amount"
+                placeholder="Enter amount"
+                min="1"
+                step="0.01">
+
+
+            <button
+                class="save-button"
+                onclick="savePayment()">
+
+                💰 Save Payment
+
+            </button>
+
+        </div>
+
+
+        <!-- PAYMENT SUMMARY -->
+
+        <div class="box">
+
+            <h2>
+                Payment Summary
+            </h2>
+
+
+            <div class="summary">
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Total Payments
+                    </h3>
+
+                    <p id="totalPayments">
+                        ₹0.00
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Number of Payments
+                    </h3>
+
+                    <p id="paymentCount">
+                        0
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENT RECORDS -->
+
+        <div class="box">
+
+            <h2>
+                Payment Records
+            </h2>
+
+
+            <div style="overflow-x:auto;">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="paymentTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+<script>
+
+
+// ==========================================
+// DATABASE
+// ==========================================
+
+const db = require("../database");
+
+
+// ==========================================
+// CREATE PAYMENTS TABLE
+// ==========================================
+
+function createPaymentsTable() {
+
+    db.run(
+        `
+        CREATE TABLE IF NOT EXISTS payments (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            customer_id INTEGER,
+
+            payment_date TEXT,
+
+            amount REAL
+
+        )
+        `,
+        function(err) {
+
+            if (err) {
+
+                console.log(
+                    "Payment table error:",
+                    err.message
+                );
+
+                return;
+
+            }
+
+            console.log(
+                "Payments table ready."
+            );
+
+
+            loadCustomers();
+
+            loadPayments();
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// LOAD CUSTOMERS
+// ==========================================
+
+function loadCustomers() {
+
+    db.all(
+        `
+        SELECT *
+        FROM customers
+        ORDER BY name
+        `,
+        [],
+        function(err, rows) {
+
+            if (err) {
+
+                console.log(
+                    "Customer loading error:",
+                    err.message
+                );
+
+                return;
+
+            }
+
+
+            const select =
+                document.getElementById(
+                    "customer"
+                );
+
+
+            select.innerHTML =
+                `
+                <option value="">
+                    Select Customer
+                </option>
+                `;
+
+
+            rows.forEach(
+                function(customer) {
+
+                    select.innerHTML += `
+
+                        <option
+                            value="${customer.id}">
+
+                            ${customer.name}
+
+                        </option>
+
+                    `;
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// SAVE PAYMENT
+// ==========================================
+
+function savePayment() {
+
+
+    const customer =
+        document.getElementById(
+            "customer"
+        ).value;
+
+
+    const date =
+        document.getElementById(
+            "paymentDate"
+        ).value;
+
+
+    const amount =
+        document.getElementById(
+            "amount"
+        ).value;
+
+
+    // VALIDATION
+
+    if (customer === "") {
+
+        alert(
+            "Please select a customer."
+        );
+
+        return;
+
+    }
+
+
+    if (date === "") {
+
+        alert(
+            "Please select payment date."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        amount === ""
+        ||
+        Number(amount) <= 0
+    ) {
+
+        alert(
+            "Please enter a valid payment amount."
+        );
+
+        return;
+
+    }
+
+
+    // INSERT PAYMENT
+
+    db.run(
+        `
+        INSERT INTO payments
+        (
+            customer_id,
+            payment_date,
+            amount
+        )
+        VALUES (?, ?, ?)
+        `,
+        [
+            customer,
+            date,
+            Number(amount)
+        ],
+        function(err) {
+
+            if (err) {
+
+                alert(
+                    "Error saving payment: "
+                    + err.message
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                "Payment Saved Successfully! 💰"
+            );
+
+
+            document.getElementById(
+                "amount"
+            ).value = "";
+
+
+            loadPayments();
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// LOAD PAYMENT RECORDS
+// ==========================================
+
+function loadPayments() {
+
+    db.all(
+        `
+        SELECT
+
+            payments.id,
+
+            customers.name,
+
+            payments.payment_date,
+
+            payments.amount
+
+        FROM payments
+
+        LEFT JOIN customers
+
+        ON payments.customer_id =
+           customers.id
+
+        ORDER BY
+            payments.id DESC
+
+        `,
+        [],
+        function(err, rows) {
+
+            if (err) {
+
+                console.log(
+                    "Payment loading error:",
+                    err.message
+                );
+
+                return;
+
+            }
+
+
+            const table =
+                document.getElementById(
+                    "paymentTable"
+                );
+
+
+            table.innerHTML = "";
+
+
+            let total =
+                0;
+
+
+            let count =
+                0;
+
+
+            if (
+                !rows ||
+                rows.length === 0
+            ) {
+
+                table.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="empty">
+
+                            No payment records yet.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                document.getElementById(
+                    "totalPayments"
+                ).innerText =
+                    "₹0.00";
+
+
+                document.getElementById(
+                    "paymentCount"
+                ).innerText =
+                    "0";
+
+
+                return;
+
+            }
+
+
+            rows.forEach(
+                function(payment) {
+
+
+                    const amount =
+                        Number(
+                            payment.amount
+                        ) || 0;
+
+
+                    total += amount;
+
+                    count++;
+
+
+                    table.innerHTML += `
+
+                        <tr>
+
+                            <td>
+                                ${payment.id}
+                            </td>
+
+                            <td>
+                                ${payment.name || "Unknown"}
+                            </td>
+
+                            <td>
+                                ${payment.payment_date}
+                            </td>
+
+                            <td>
+                                ₹${amount.toFixed(2)}
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="delete-button"
+                                    onclick="deletePayment(${payment.id})">
+
+                                    Delete
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            );
+
+
+            document.getElementById(
+                "totalPayments"
+            ).innerText =
+                "₹"
+                + total.toFixed(2);
+
+
+            document.getElementById(
+                "paymentCount"
+            ).innerText =
+                count;
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// DELETE PAYMENT
+// ==========================================
+
+function deletePayment(id) {
+
+
+    const confirmDelete =
+        confirm(
+            "Are you sure you want to delete this payment?"
+        );
+
+
+    if (!confirmDelete) {
+
+        return;
+
+    }
+
+
+    db.run(
+        `
+        DELETE FROM payments
+        WHERE id = ?
+        `,
+        [id],
+        function(err) {
+
+            if (err) {
+
+                alert(
+                    "Error deleting payment: "
+                    + err.message
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                "Payment deleted successfully."
+            );
+
+
+            loadPayments();
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// BACK TO DASHBOARD
+// ==========================================
+
+function goBack() {
+
+    window.location.href =
+        "../index.html";
+
+}
+
+
+// ==========================================
+// TODAY'S DATE
+// ==========================================
+
+document.getElementById(
+    "paymentDate"
+).value =
+    new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+// ==========================================
+// START APPLICATION
+// ==========================================
+
+createPaymentsTable();
+
+
+</script>
+
+
+</body>
+
+</html>

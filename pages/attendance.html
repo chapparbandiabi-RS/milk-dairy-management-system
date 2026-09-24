@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance - Milk Dairy Management</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f9;
+            color: #222;
+        }
+
+        .header {
+            background: #1e88e5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .back-btn {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .back-btn:hover {
+            background: #333;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            color: #1e88e5;
+            margin-top: 0;
+        }
+
+        .date-box {
+            margin-bottom: 20px;
+        }
+
+        .date-box label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .date-box input {
+            padding: 12px;
+            width: 220px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-box {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+        }
+
+        .total-box {
+            background: #607d8b;
+        }
+
+        .present-box {
+            background: #43a047;
+        }
+
+        .absent-box {
+            background: #e53935;
+        }
+
+        .summary-box h3 {
+            margin: 0 0 8px;
+        }
+
+        .summary-box p {
+            font-size: 25px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1e88e5;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .present-btn {
+            background: #43a047;
+            color: white;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .absent-btn {
+            background: #e53935;
+            color: white;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .present-btn:hover {
+            background: #2e7d32;
+        }
+
+        .absent-btn:hover {
+            background: #b71c1c;
+        }
+
+        .present-text {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .absent-text {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .not-marked {
+            color: #777;
+        }
+
+        .save-box {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .save-btn {
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .save-btn:hover {
+            background: #1565c0;
+        }
+
+        .history-present {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .history-absent {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            th,
+            td {
+                padding: 9px;
+                font-size: 13px;
+            }
+
+            .present-btn,
+            .absent-btn {
+                display: block;
+                width: 100px;
+                margin-bottom: 5px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <h1>🥛 Milk Dairy Management</h1>
+
+        <p>Daily Attendance</p>
+
+    </div>
+
+
+    <div class="container">
+
+        <button
+            class="back-btn"
+            onclick="goBack()">
+
+            ← Back to Dashboard
+
+        </button>
+
+
+        <!-- ATTENDANCE -->
+
+        <div class="card">
+
+            <h2>📋 Customer Attendance</h2>
+
+            <div class="date-box">
+
+                <label>
+                    Select Date
+                </label>
+
+                <input
+                    type="date"
+                    id="attendanceDate"
+                    onchange="loadAttendance()">
+
+            </div>
+
+
+            <!-- SUMMARY -->
+
+            <div class="summary">
+
+                <div class="summary-box total-box">
+
+                    <h3>Total Customers</h3>
+
+                    <p id="totalCount">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="summary-box present-box">
+
+                    <h3>Present</h3>
+
+                    <p id="presentCount">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="summary-box absent-box">
+
+                    <h3>Absent</h3>
+
+                    <p id="absentCount">
+                        0
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CUSTOMER TABLE -->
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Customer Name</th>
+
+                            <th>Phone</th>
+
+                            <th>Status</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="attendanceTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="save-box">
+
+                <button
+                    class="save-btn"
+                    onclick="saveAttendance()">
+
+                    💾 Save Attendance
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- HISTORY -->
+
+        <div class="card">
+
+            <h2>📅 Attendance History</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Date</th>
+
+                            <th>Present</th>
+
+                            <th>Absent</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="historyTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+<script>
+
+    // ==========================================
+    // DATABASE CONNECTION
+    // ==========================================
+
+    const db = require("../database");
+
+
+    // ==========================================
+    // CREATE ATTENDANCE TABLE
+    // ==========================================
+
+    function createAttendanceTable() {
+
+        db.run(`
+            CREATE TABLE IF NOT EXISTS attendance (
+
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                customer_id INTEGER NOT NULL,
+
+                date TEXT NOT NULL,
+
+                status TEXT NOT NULL,
+
+                UNIQUE(customer_id, date)
+
+            )
+        `, function(err) {
+
+            if (err) {
+
+                console.log(
+                    "Attendance table error:",
+                    err.message
+                );
+
+                alert(
+                    "Could not create attendance table: "
+                    + err.message
+                );
+
+                return;
+            }
+
+            console.log(
+                "Attendance table ready."
+            );
+
+            loadAttendance();
+            loadHistory();
+
+        });
+
+    }
+
+
+    // ==========================================
+    // GET TODAY
+    // ==========================================
+
+    function getToday() {
+
+        const now = new Date();
+
+        const year =
+            now.getFullYear();
+
+        const month =
+            String(
+                now.getMonth() + 1
+            ).padStart(2, "0");
+
+        const day =
+            String(
+                now.getDate()
+            ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+
+    }
+
+
+    // ==========================================
+    // SET TODAY
+    // ==========================================
+
+    document.getElementById(
+        "attendanceDate"
+    ).value = getToday();
+
+
+    // ==========================================
+    // LOAD ATTENDANCE
+    // ==========================================
+
+    function loadAttendance() {
+
+        const date =
+            document.getElementById(
+                "attendanceDate"
+            ).value;
+
+
+        if (!date) {
+            return;
+        }
+
+
+        db.all(`
+            SELECT
+
+                customers.id,
+
+                customers.name,
+
+                customers.phone,
+
+                attendance.status
+
+            FROM customers
+
+            LEFT JOIN attendance
+
+            ON customers.id =
+               attendance.customer_id
+
+            AND attendance.date = ?
+
+            ORDER BY customers.id DESC
+
+        `,
+        [date],
+
+        function(err, rows) {
+
+            if (err) {
+
+                console.log(
+                    "Attendance load error:",
+                    err.message
+                );
+
+                alert(
+                    "Error loading attendance: "
+                    + err.message
+                );
+
+                return;
+            }
+
+
+            const table =
+                document.getElementById(
+                    "attendanceTable"
+                );
+
+
+            table.innerHTML = "";
+
+
+            if (!rows || rows.length === 0) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5"
+                            style="text-align:center;color:#777;">
+
+                            No customers found.
+
+                        </td>
+                    </tr>
+                `;
+
+                updateSummary([]);
+
+                return;
+            }
+
+
+            rows.forEach(function(customer) {
+
+                const status =
+                    customer.status ||
+                    "Not Marked";
+
+
+                let statusClass =
+                    "not-marked";
+
+
+                if (status === "Present") {
+
+                    statusClass =
+                        "present-text";
+
+                }
+
+
+                if (status === "Absent") {
+
+                    statusClass =
+                        "absent-text";
+
+                }
+
+
+                table.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            ${customer.id}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${customer.name}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${customer.phone}
+                        </td>
+
+                        <td>
+
+                            <span
+                                id="status-${customer.id}"
+                                class="${statusClass}">
+
+                                ${status}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="present-btn"
+                                onclick="markAttendance(
+                                    ${customer.id},
+                                    'Present'
+                                )">
+
+                                🟢 Present
+
+                            </button>
+
+
+                            <button
+                                class="absent-btn"
+                                onclick="markAttendance(
+                                    ${customer.id},
+                                    'Absent'
+                                )">
+
+                                🔴 Absent
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            });
+
+
+            updateSummary(rows);
+
+        });
+
+    }
+
+
+    // ==========================================
+    // MARK ATTENDANCE
+    // ==========================================
+
+    function markAttendance(
+        customerId,
+        status
+    ) {
+
+        const date =
+            document.getElementById(
+                "attendanceDate"
+            ).value;
+
+
+        if (!date) {
+
+            alert(
+                "Please select a date."
+            );
+
+            return;
+        }
+
+
+        db.run(`
+            INSERT INTO attendance
+            (
+                customer_id,
+                date,
+                status
+            )
+
+            VALUES (?, ?, ?)
+
+            ON CONFLICT(customer_id, date)
+
+            DO UPDATE SET
+                status = excluded.status
+
+        `,
+        [
+            customerId,
+            date,
+            status
+        ],
+
+        function(err) {
+
+            if (err) {
+
+                alert(
+                    "Error saving attendance: "
+                    + err.message
+                );
+
+                console.log(err);
+
+                return;
+            }
+
+
+            loadAttendance();
+
+            loadHistory();
+
+        });
+
+    }
+
+
+    // ==========================================
+    // SAVE ATTENDANCE
+    // ==========================================
+
+    function saveAttendance() {
+
+        const date =
+            document.getElementById(
+                "attendanceDate"
+            ).value;
+
+
+        if (!date) {
+
+            alert(
+                "Please select a date."
+            );
+
+            return;
+        }
+
+
+        db.get(`
+            SELECT COUNT(*) AS total
+
+            FROM attendance
+
+            WHERE date = ?
+
+        `,
+        [date],
+
+        function(err, row) {
+
+            if (err) {
+
+                alert(
+                    "Error checking attendance."
+                );
+
+                console.log(err);
+
+                return;
+            }
+
+
+            if (!row || row.total === 0) {
+
+                alert(
+                    "Please mark Present or Absent first."
+                );
+
+                return;
+            }
+
+
+            alert(
+                "✅ Attendance saved successfully!"
+            );
+
+
+            loadAttendance();
+
+            loadHistory();
+
+        });
+
+    }
+
+
+    // ==========================================
+    // UPDATE SUMMARY
+    // ==========================================
+
+    function updateSummary(rows) {
+
+        let present = 0;
+
+        let absent = 0;
+
+
+        rows.forEach(function(customer) {
+
+            if (
+                customer.status ===
+                "Present"
+            ) {
+
+                present++;
+
+            }
+
+
+            if (
+                customer.status ===
+                "Absent"
+            ) {
+
+                absent++;
+
+            }
+
+        });
+
+
+        document.getElementById(
+            "totalCount"
+        ).innerText =
+            rows.length;
+
+
+        document.getElementById(
+            "presentCount"
+        ).innerText =
+            present;
+
+
+        document.getElementById(
+            "absentCount"
+        ).innerText =
+            absent;
+
+    }
+
+
+    // ==========================================
+    // ATTENDANCE HISTORY
+    // ==========================================
+
+    function loadHistory() {
+
+        db.all(`
+            SELECT
+
+                date,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Present'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS present,
+
+                SUM(
+                    CASE
+                        WHEN status = 'Absent'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS absent
+
+            FROM attendance
+
+            GROUP BY date
+
+            ORDER BY date DESC
+
+        `,
+        [],
+
+        function(err, rows) {
+
+            if (err) {
+
+                console.log(
+                    "History error:",
+                    err.message
+                );
+
+                return;
+            }
+
+
+            const table =
+                document.getElementById(
+                    "historyTable"
+                );
+
+
+            table.innerHTML = "";
+
+
+            if (!rows || rows.length === 0) {
+
+                table.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="3"
+                            style="
+                                text-align:center;
+                                color:#777;
+                            ">
+
+                            No attendance
+                            records found.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+            }
+
+
+            rows.forEach(function(row) {
+
+                table.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            ${formatDate(row.date)}
+                        </td>
+
+                        <td
+                            class="history-present">
+
+                            🟢 ${row.present || 0}
+
+                        </td>
+
+                        <td
+                            class="history-absent">
+
+                            🔴 ${row.absent || 0}
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            });
+
+        });
+
+    }
+
+
+    // ==========================================
+    // FORMAT DATE
+    // ==========================================
+
+    function formatDate(dateString) {
+
+        const parts =
+            dateString.split("-");
+
+
+        return (
+            parts[2]
+            + "-"
+            + parts[1]
+            + "-"
+            + parts[0]
+        );
+
+    }
+
+
+    // ==========================================
+    // BACK TO DASHBOARD
+    // ==========================================
+
+    function goBack() {
+
+        window.location.href =
+            "../index.html";
+
+    }
+
+
+    // ==========================================
+    // START APPLICATION
+    // ==========================================
+
+    createAttendanceTable();
+
+</script>
+
+</body>
+
+</html>

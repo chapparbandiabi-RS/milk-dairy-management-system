@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Monthly Bills</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f7f9;
+            color: #222;
+        }
+
+        .header {
+            background: #1e88e5;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            margin-top: 8px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .back-button {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .back-button:hover {
+            background: #333;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .box h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 13px 22px;
+            background: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .print-button {
+            background: #43a047;
+            margin-left: 10px;
+        }
+
+        .month-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #1565c0;
+            font-weight: bold;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 15px 0;
+            color: #666;
+        }
+
+        .summary-card p {
+            margin: 0;
+            font-size: 25px;
+            font-weight: bold;
+            color: #1e88e5;
+        }
+
+        .attendance-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .attendance-card {
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+        }
+
+        .total-days {
+            background: #607d8b;
+        }
+
+        .present-days {
+            background: #43a047;
+        }
+
+        .absent-days {
+            background: #e53935;
+        }
+
+        .attendance-card h3 {
+            margin: 0 0 8px;
+        }
+
+        .attendance-card p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #1e88e5;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .present {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .absent {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .header {
+                background: white;
+                color: black;
+                border-bottom: 2px solid #000;
+            }
+
+            .container {
+                width: 100%;
+                margin: 0;
+            }
+
+            .back-button,
+            .print-button,
+            select,
+            input,
+            #generateButton {
+                display: none;
+            }
+
+            .box {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .attendance-summary {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .print-button {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <h1>🧾 Monthly Bills</h1>
+
+    <p>Calculate Customer Monthly Bills</p>
+
+</div>
+
+
+<div class="container">
+
+
+    <button
+        class="back-button"
+        onclick="goBack()">
+
+        ← Back to Dashboard
+
+    </button>
+
+
+    <!-- CUSTOMER AND MONTH -->
+
+    <div class="box">
+
+        <h2>Select Customer & Month</h2>
+
+        <label>Customer</label>
+
+        <select id="customer">
+
+            <option value="">
+                Select Customer
+            </option>
+
+        </select>
+
+
+        <label>Select Month</label>
+
+        <input
+            type="month"
+            id="billMonth">
+
+
+        <button
+            id="generateButton"
+            onclick="generateBill()">
+
+            🧾 Generate Monthly Bill
+
+        </button>
+
+
+        <button
+            class="print-button"
+            onclick="printBill()">
+
+            🖨️ Print Bill
+
+        </button>
+
+    </div>
+
+
+    <!-- CUSTOMER DETAILS -->
+
+    <div
+        class="box"
+        id="customerInfo"
+        style="display:none;">
+
+        <h2>Customer Details</h2>
+
+        <p id="customerDetails"></p>
+
+    </div>
+
+
+    <!-- BILL SUMMARY -->
+
+    <div class="box">
+
+        <h2>Bill Summary</h2>
+
+        <div
+            id="monthDisplay"
+            class="month-info">
+
+            Select customer and month
+            to generate bill.
+
+        </div>
+
+
+        <div class="summary">
+
+
+            <div class="summary-card">
+
+                <h3>Total Milk</h3>
+
+                <p id="totalMilk">
+                    0 L
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Milk Amount</h3>
+
+                <p id="milkAmount">
+                    ₹0
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Total Paid</h3>
+
+                <p id="totalPaid">
+                    ₹0
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Pending</h3>
+
+                <p id="pending">
+                    ₹0
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ATTENDANCE -->
+
+    <div class="box">
+
+        <h2>📋 Attendance Summary</h2>
+
+        <div class="attendance-summary">
+
+
+            <div class="attendance-card total-days">
+
+                <h3>Recorded Days</h3>
+
+                <p id="recordedDays">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="attendance-card present-days">
+
+                <h3>Present Days</h3>
+
+                <p id="presentDays">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="attendance-card absent-days">
+
+                <h3>Absent Days</h3>
+
+                <p id="absentDays">
+                    0
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- MILK RECORDS -->
+
+    <div class="box">
+
+        <h2>🥛 Milk Records</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Date</th>
+
+                        <th>Attendance</th>
+
+                        <th>Morning</th>
+
+                        <th>Evening</th>
+
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="milkTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+const db = require("../database");
+
+
+// ==========================================
+// CURRENT MONTH
+// ==========================================
+
+function getCurrentMonth() {
+
+    const now = new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2, "0");
+
+    return year + "-" + month;
+
+}
+
+
+document.getElementById("billMonth").value =
+    getCurrentMonth();
+
+
+// ==========================================
+// LOAD CUSTOMERS
+// ==========================================
+
+function loadCustomers() {
+
+    db.all(
+        `
+        SELECT *
+        FROM customers
+        ORDER BY name
+        `,
+        [],
+        function(err, rows) {
+
+            if (err) {
+
+                console.log(
+                    "Customer loading error:",
+                    err.message
+                );
+
+                return;
+
+            }
+
+            const select =
+                document.getElementById("customer");
+
+            select.innerHTML =
+                `
+                <option value="">
+                    Select Customer
+                </option>
+                `;
+
+            rows.forEach(function(customer) {
+
+                select.innerHTML +=
+                    `
+                    <option value="${customer.id}">
+                        ${customer.name}
+                    </option>
+                    `;
+
+            });
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// GENERATE BILL
+// ==========================================
+
+function generateBill() {
+
+    const customerId =
+        document.getElementById("customer").value;
+
+    const selectedMonth =
+        document.getElementById("billMonth").value;
+
+
+    if (customerId === "") {
+
+        alert("Please select a customer.");
+
+        return;
+
+    }
+
+
+    if (selectedMonth === "") {
+
+        alert("Please select a month.");
+
+        return;
+
+    }
+
+
+    // ======================================
+    // DATE RANGE
+    // ======================================
+
+    const startDate =
+        selectedMonth + "-01";
+
+
+    const parts =
+        selectedMonth.split("-");
+
+
+    const year =
+        Number(parts[0]);
+
+
+    const month =
+        Number(parts[1]);
+
+
+    const lastDay =
+        new Date(
+            year,
+            month,
+            0
+        ).getDate();
+
+
+    const endDate =
+        selectedMonth +
+        "-" +
+        String(lastDay).padStart(2, "0");
+
+
+    // ======================================
+    // CUSTOMER
+    // ======================================
+
+    db.get(
+        `
+        SELECT *
+        FROM customers
+        WHERE id = ?
+        `,
+        [customerId],
+        function(err, customer) {
+
+            if (err) {
+
+                console.log(err.message);
+
+                return;
+
+            }
+
+
+            if (!customer) {
+
+                alert("Customer not found.");
+
+                return;
+
+            }
+
+
+            // CUSTOMER DETAILS
+
+            document.getElementById(
+                "customerInfo"
+            ).style.display = "block";
+
+
+            document.getElementById(
+                "customerDetails"
+            ).innerHTML =
+
+                `
+                <strong>Name:</strong>
+                ${customer.name}
+                <br><br>
+
+                <strong>Phone:</strong>
+                ${customer.phone}
+                <br><br>
+
+                <strong>Price per Liter:</strong>
+                ₹${Number(customer.price).toFixed(2)}
+                `;
+
+
+            // MONTH DISPLAY
+
+            const displayDate =
+                new Date(
+                    year,
+                    month - 1
+                );
+
+
+            const monthName =
+                displayDate.toLocaleString(
+                    "default",
+                    {
+                        month: "long"
+                    }
+                );
+
+
+            document.getElementById(
+                "monthDisplay"
+            ).innerText =
+                "🧾 Bill for " +
+                monthName +
+                " " +
+                year;
+
+
+            // ==================================
+            // ATTENDANCE + MILK
+            // ==================================
+
+            db.all(
+                `
+                SELECT
+
+                    attendance.date,
+
+                    attendance.status,
+
+                    milk_entries.morning,
+
+                    milk_entries.evening,
+
+                    milk_entries.total
+
+                FROM attendance
+
+                LEFT JOIN milk_entries
+
+                ON
+                    attendance.customer_id =
+                    milk_entries.customer_id
+
+                AND
+                    attendance.date =
+                    milk_entries.date
+
+                WHERE
+                    attendance.customer_id = ?
+
+                AND
+                    attendance.date >= ?
+
+                AND
+                    attendance.date <= ?
+
+                ORDER BY
+                    attendance.date ASC
+
+                `,
+                [
+                    customerId,
+                    startDate,
+                    endDate
+                ],
+                function(err, rows) {
+
+                    if (err) {
+
+                        console.log(
+                            "Attendance/Milk error:",
+                            err.message
+                        );
+
+                        alert(
+                            "Attendance table connection error: " +
+                            err.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    let totalMilk = 0;
+
+                    let presentDays = 0;
+
+                    let absentDays = 0;
+
+
+                    const table =
+                        document.getElementById(
+                            "milkTable"
+                        );
+
+
+                    table.innerHTML = "";
+
+
+                    if (!rows || rows.length === 0) {
+
+                        table.innerHTML =
+                            `
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="no-records">
+
+                                    No attendance records
+                                    found for this month.
+
+                                </td>
+
+                            </tr>
+                            `;
+
+                    }
+
+
+                    rows.forEach(function(row) {
+
+                        let morning = 0;
+
+                        let evening = 0;
+
+                        let total = 0;
+
+
+                        // Convert status
+                        // safely
+
+                        const status =
+                            String(
+                                row.status || ""
+                            ).toLowerCase();
+
+
+                        // ==================================
+                        // PRESENT
+                        // ==================================
+
+                        if (
+                            status === "present"
+                        ) {
+
+                            presentDays++;
+
+
+                            morning =
+                                Number(
+                                    row.morning
+                                ) || 0;
+
+
+                            evening =
+                                Number(
+                                    row.evening
+                                ) || 0;
+
+
+                            total =
+                                Number(
+                                    row.total
+                                ) ||
+                                (
+                                    morning +
+                                    evening
+                                );
+
+                        }
+
+
+                        // ==================================
+                        // ABSENT
+                        // ==================================
+
+                        else {
+
+                            absentDays++;
+
+                            morning = 0;
+
+                            evening = 0;
+
+                            total = 0;
+
+                        }
+
+
+                        totalMilk += total;
+
+
+                        const isPresent =
+                            status === "present";
+
+
+                        const statusClass =
+                            isPresent
+                                ? "present"
+                                : "absent";
+
+
+                        const statusIcon =
+                            isPresent
+                                ? "🟢"
+                                : "🔴";
+
+
+                        table.innerHTML +=
+                            `
+                            <tr>
+
+                                <td>
+                                    ${row.date}
+                                </td>
+
+                                <td class="${statusClass}">
+
+                                    ${statusIcon}
+
+                                    ${
+                                        isPresent
+                                            ? "Present"
+                                            : "Absent"
+                                    }
+
+                                </td>
+
+                                <td>
+                                    ${morning} L
+                                </td>
+
+                                <td>
+                                    ${evening} L
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ${total} L
+                                    </strong>
+                                </td>
+
+                            </tr>
+                            `;
+
+                    });
+
+
+                    // ==================================
+                    // ATTENDANCE SUMMARY
+                    // ==================================
+
+                    document.getElementById(
+                        "recordedDays"
+                    ).innerText =
+                        rows.length;
+
+
+                    document.getElementById(
+                        "presentDays"
+                    ).innerText =
+                        presentDays;
+
+
+                    document.getElementById(
+                        "absentDays"
+                    ).innerText =
+                        absentDays;
+
+
+                    // ==================================
+                    // MILK AMOUNT
+                    // ==================================
+
+                    const price =
+                        Number(
+                            customer.price
+                        ) || 0;
+
+
+                    const milkAmount =
+                        totalMilk * price;
+
+
+                    // ==================================
+                    // PAYMENTS
+                    // IMPORTANT:
+                    // payment_date is used
+                    // ==================================
+
+                    db.all(
+                        `
+                        SELECT
+                            SUM(amount)
+                            AS totalPaid
+
+                        FROM payments
+
+                        WHERE
+                            customer_id = ?
+
+                        AND
+                            payment_date >= ?
+
+                        AND
+                            payment_date <= ?
+
+                        `,
+                        [
+                            customerId,
+                            startDate,
+                            endDate
+                        ],
+                        function(
+                            paymentErr,
+                            paymentRows
+                        ) {
+
+                            if (paymentErr) {
+
+                                console.log(
+                                    "Payment error:",
+                                    paymentErr.message
+                                );
+
+                                return;
+
+                            }
+
+
+                            let totalPaid = 0;
+
+
+                            if (
+                                paymentRows &&
+                                paymentRows.length > 0
+                            ) {
+
+                                totalPaid =
+                                    Number(
+                                        paymentRows[0]
+                                            .totalPaid
+                                    ) || 0;
+
+                            }
+
+
+                            const pending =
+                                milkAmount -
+                                totalPaid;
+
+
+                            // ==================================
+                            // DISPLAY
+                            // ==================================
+
+                            document.getElementById(
+                                "totalMilk"
+                            ).innerText =
+                                totalMilk.toFixed(2)
+                                + " L";
+
+
+                            document.getElementById(
+                                "milkAmount"
+                            ).innerText =
+                                "₹"
+                                +
+                                milkAmount.toFixed(2);
+
+
+                            document.getElementById(
+                                "totalPaid"
+                            ).innerText =
+                                "₹"
+                                +
+                                totalPaid.toFixed(2);
+
+
+                            document.getElementById(
+                                "pending"
+                            ).innerText =
+                                "₹"
+                                +
+                                pending.toFixed(2);
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// PRINT BILL
+// ==========================================
+
+function printBill() {
+
+    const customerId =
+        document.getElementById(
+            "customer"
+        ).value;
+
+
+    const month =
+        document.getElementById(
+            "billMonth"
+        ).value;
+
+
+    if (
+        customerId === "" ||
+        month === ""
+    ) {
+
+        alert(
+            "Please select customer and month first."
+        );
+
+        return;
+
+    }
+
+
+    window.print();
+
+}
+
+
+// ==========================================
+// BACK TO DASHBOARD
+// ==========================================
+
+function goBack() {
+
+    window.location.href =
+        "../index.html";
+
+}
+
+
+// ==========================================
+// START APPLICATION
+// ==========================================
+
+loadCustomers();
+
+
+</script>
+
+
+</body>
+
+</html>

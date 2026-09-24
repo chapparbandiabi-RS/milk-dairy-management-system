@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customers - Milk Dairy Management</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f9;
+        }
+
+        .header {
+            background: #1e88e5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .form-box,
+        .table-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table-box {
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #1e88e5;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            background: #1e88e5;
+            color: white;
+            cursor: pointer;
+            margin: 4px;
+        }
+
+        button:hover {
+            background: #1565c0;
+        }
+
+        .back-btn {
+            background: #555;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #333;
+        }
+
+        .edit-btn {
+            background: #fb8c00;
+        }
+
+        .edit-btn:hover {
+            background: #ef6c00;
+        }
+
+        .call-btn {
+            background: #43a047;
+        }
+
+        .call-btn:hover {
+            background: #2e7d32;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+        }
+
+        .whatsapp-btn:hover {
+            background: #128C7E;
+        }
+
+        .delete-btn {
+            background: #e53935;
+        }
+
+        .delete-btn:hover {
+            background: #b71c1c;
+        }
+
+        .cancel-btn {
+            background: #777;
+        }
+
+        .cancel-btn:hover {
+            background: #555;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 2px solid #1e88e5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1e88e5;
+            color: white;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Milk Dairy Management</h1>
+        <p>Customer Management</p>
+    </div>
+
+    <div class="container">
+
+        <button class="back-btn" onclick="goBack()">
+            ← Back to Dashboard
+        </button>
+
+        <!-- ADD / EDIT CUSTOMER -->
+
+        <div class="form-box">
+
+            <h2 id="formTitle">Add Customer</h2>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Customer Name"
+            >
+
+            <input
+                type="text"
+                id="phone"
+                placeholder="Phone Number"
+            >
+
+            <input
+                type="text"
+                id="address"
+                placeholder="Address"
+            >
+
+            <input
+                type="number"
+                id="price"
+                placeholder="Price per Liter"
+            >
+
+            <button id="saveButton" onclick="addCustomer()">
+                Add Customer
+            </button>
+
+            <button
+                id="cancelButton"
+                class="cancel-btn"
+                onclick="cancelEdit()"
+                style="display: none;"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+        <!-- CUSTOMER LIST -->
+
+        <div class="table-box">
+
+            <h2>Customer List</h2>
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="searchCustomer"
+                    placeholder="🔍 Search customer by name or phone..."
+                    onkeyup="searchCustomers()"
+                >
+
+            </div>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Price/Liter</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="customerTable">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const db = require("../database");
+
+        let editingCustomerId = null;
+
+
+        // =========================
+        // ADD CUSTOMER
+        // =========================
+
+        function addCustomer() {
+
+            const name =
+                document.getElementById("name").value.trim();
+
+            const phone =
+                document.getElementById("phone").value.trim();
+
+            const address =
+                document.getElementById("address").value.trim();
+
+            const price =
+                document.getElementById("price").value.trim();
+
+            if (name === "" || phone === "" || price === "") {
+
+                alert("Please enter Name, Phone and Price.");
+
+                return;
+            }
+
+            const sql = `
+                INSERT INTO customers
+                (name, phone, address, price)
+                VALUES (?, ?, ?, ?)
+            `;
+
+            db.run(
+                sql,
+                [name, phone, address, price],
+                function(err) {
+
+                    if (err) {
+
+                        alert(
+                            "Error adding customer: " +
+                            err.message
+                        );
+
+                        return;
+                    }
+
+                    alert("Customer added successfully!");
+
+                    clearForm();
+
+                    loadCustomers();
+                }
+            );
+        }
+
+
+        // =========================
+        // LOAD CUSTOMERS
+        // =========================
+
+        function loadCustomers() {
+
+            db.all(
+                "SELECT * FROM customers ORDER BY id DESC",
+                [],
+                function(err, rows) {
+
+                    if (err) {
+
+                        console.log(err.message);
+
+                        return;
+                    }
+
+                    displayCustomers(rows);
+                }
+            );
+        }
+
+
+        // =========================
+        // DISPLAY CUSTOMERS
+        // =========================
+
+        function displayCustomers(rows) {
+
+            const table =
+                document.getElementById("customerTable");
+
+            table.innerHTML = "";
+
+            if (rows.length === 0) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="no-results">
+                            No customers found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+            rows.forEach(function(customer) {
+
+                table.innerHTML += `
+
+                    <tr>
+
+                        <td>${customer.id}</td>
+
+                        <td>${customer.name}</td>
+
+                        <td>${customer.phone}</td>
+
+                        <td>${customer.address || ""}</td>
+
+                        <td>₹${customer.price}</td>
+
+                        <td>
+
+                            <button
+                                class="edit-btn"
+                                onclick="editCustomer(${customer.id})"
+                            >
+                                ✏️ Edit
+                            </button>
+
+                            <button
+                                class="call-btn"
+                                onclick="callCustomer('${customer.phone}')"
+                            >
+                                📞 Call
+                            </button>
+
+                            <button
+                                class="whatsapp-btn"
+                                onclick="sendPaymentReminder('${customer.phone}', '${customer.name}')"
+                            >
+                                💬 Payment Reminder
+                            </button>
+
+                            <button
+                                class="delete-btn"
+                                onclick="deleteCustomer(${customer.id})"
+                            >
+                                🗑️ Delete
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            });
+        }
+
+
+        // =========================
+        // SEARCH CUSTOMERS
+        // =========================
+
+        function searchCustomers() {
+
+            const searchText =
+                document
+                    .getElementById("searchCustomer")
+                    .value
+                    .toLowerCase()
+                    .trim();
+
+            db.all(
+                "SELECT * FROM customers ORDER BY id DESC",
+                [],
+                function(err, rows) {
+
+                    if (err) {
+
+                        console.log(err.message);
+
+                        return;
+                    }
+
+                    const filteredCustomers =
+                        rows.filter(function(customer) {
+
+                            const name =
+                                (customer.name || "")
+                                .toLowerCase();
+
+                            const phone =
+                                (customer.phone || "")
+                                .toLowerCase();
+
+                            return (
+                                name.includes(searchText) ||
+                                phone.includes(searchText)
+                            );
+
+                        });
+
+                    displayCustomers(filteredCustomers);
+
+                }
+            );
+        }
+
+
+        // =========================
+        // CALL CUSTOMER
+        // =========================
+
+        function callCustomer(phone) {
+
+            if (!phone || phone.trim() === "") {
+
+                alert(
+                    "Customer phone number is not available."
+                );
+
+                return;
+            }
+
+            const cleanPhone =
+                phone.replace(/\s+/g, "");
+
+            window.location.href =
+                "tel:" + cleanPhone;
+        }
+
+
+        // =========================
+        // WHATSAPP PAYMENT REMINDER
+        // =========================
+
+        function sendPaymentReminder(phone, name) {
+
+            if (!phone || phone.trim() === "") {
+
+                alert(
+                    "Customer phone number is not available."
+                );
+
+                return;
+            }
+
+            let cleanPhone =
+                phone.replace(/\D/g, "");
+
+            // Automatically add India country code
+            if (cleanPhone.length === 10) {
+
+                cleanPhone =
+                    "91" + cleanPhone;
+            }
+
+            if (cleanPhone.length !== 12) {
+
+                alert(
+                    "Please check the customer's phone number."
+                );
+
+                return;
+            }
+
+            const message =
+                "Hello " +
+                name +
+                ", this is a reminder regarding your pending milk payment. Please make the payment at your convenience. Thank you.";
+
+            const whatsappURL =
+                "https://wa.me/" +
+                cleanPhone +
+                "?text=" +
+                encodeURIComponent(message);
+
+            try {
+
+                require("electron")
+                    .shell
+                    .openExternal(whatsappURL);
+
+            } catch (error) {
+
+                alert(
+                    "Unable to open WhatsApp. Please make sure a browser is installed."
+                );
+
+                console.error(error);
+            }
+        }
+
+
+        // =========================
+        // EDIT CUSTOMER
+        // =========================
+
+        function editCustomer(id) {
+
+            db.get(
+                "SELECT * FROM customers WHERE id = ?",
+                [id],
+                function(err, customer) {
+
+                    if (err) {
+
+                        alert(
+                            "Error loading customer: " +
+                            err.message
+                        );
+
+                        return;
+                    }
+
+                    if (!customer) {
+
+                        alert("Customer not found.");
+
+                        return;
+                    }
+
+                    document.getElementById("name").value =
+                        customer.name;
+
+                    document.getElementById("phone").value =
+                        customer.phone;
+
+                    document.getElementById("address").value =
+                        customer.address || "";
+
+                    document.getElementById("price").value =
+                        customer.price;
+
+                    editingCustomerId = id;
+
+                    document.getElementById("formTitle")
+                        .innerText = "Edit Customer";
+
+                    document.getElementById("saveButton")
+                        .innerText = "Update Customer";
+
+                    document.getElementById("saveButton")
+                        .onclick = updateCustomer;
+
+                    document.getElementById("cancelButton")
+                        .style.display = "inline-block";
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+
+                }
+            );
+        }
+
+
+        // =========================
+        // UPDATE CUSTOMER
+        // =========================
+
+        function updateCustomer() {
+
+            const name =
+                document.getElementById("name").value.trim();
+
+            const phone =
+                document.getElementById("phone").value.trim();
+
+            const address =
+                document.getElementById("address").value.trim();
+
+            const price =
+                document.getElementById("price").value.trim();
+
+            if (name === "" || phone === "" || price === "") {
+
+                alert("Please enter Name, Phone and Price.");
+
+                return;
+            }
+
+            const sql = `
+                UPDATE customers
+                SET name = ?,
+                    phone = ?,
+                    address = ?,
+                    price = ?
+                WHERE id = ?
+            `;
+
+            db.run(
+                sql,
+                [
+                    name,
+                    phone,
+                    address,
+                    price,
+                    editingCustomerId
+                ],
+                function(err) {
+
+                    if (err) {
+
+                        alert(
+                            "Error updating customer: " +
+                            err.message
+                        );
+
+                        return;
+                    }
+
+                    alert(
+                        "Customer updated successfully!"
+                    );
+
+                    cancelEdit();
+
+                    loadCustomers();
+
+                }
+            );
+        }
+
+
+        // =========================
+        // CANCEL EDIT
+        // =========================
+
+        function cancelEdit() {
+
+            editingCustomerId = null;
+
+            clearForm();
+
+            document.getElementById("formTitle")
+                .innerText = "Add Customer";
+
+            document.getElementById("saveButton")
+                .innerText = "Add Customer";
+
+            document.getElementById("saveButton")
+                .onclick = addCustomer;
+
+            document.getElementById("cancelButton")
+                .style.display = "none";
+        }
+
+
+        // =========================
+        // CLEAR FORM
+        // =========================
+
+        function clearForm() {
+
+            document.getElementById("name").value = "";
+
+            document.getElementById("phone").value = "";
+
+            document.getElementById("address").value = "";
+
+            document.getElementById("price").value = "";
+        }
+
+
+        // =========================
+        // DELETE CUSTOMER
+        // =========================
+
+        function deleteCustomer(id) {
+
+            if (
+                !confirm(
+                    "Are you sure you want to delete this customer?"
+                )
+            ) {
+
+                return;
+            }
+
+            db.run(
+                "DELETE FROM customers WHERE id = ?",
+                [id],
+                function(err) {
+
+                    if (err) {
+
+                        alert(
+                            "Error deleting customer: " +
+                            err.message
+                        );
+
+                        return;
+                    }
+
+                    alert(
+                        "Customer deleted successfully!"
+                    );
+
+                    loadCustomers();
+
+                }
+            );
+        }
+
+
+        // =========================
+        // BACK TO DASHBOARD
+        // =========================
+
+        function goBack() {
+
+            window.location.href =
+                "../index.html";
+        }
+
+
+        // =========================
+        // START
+        // =========================
+
+        loadCustomers();
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>OTP Verification - Milk Dairy</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1976d2,
+                    #64b5f6
+                );
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+        }
+
+        .otp-container {
+
+            width: 420px;
+
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.2);
+
+        }
+
+        .logo {
+
+            text-align: center;
+
+            font-size: 55px;
+
+            margin-bottom: 10px;
+
+        }
+
+        .title {
+
+            text-align: center;
+
+            color: #1976d2;
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+        }
+
+        .subtitle {
+
+            text-align: center;
+
+            color: #777;
+
+            margin-bottom: 30px;
+
+        }
+
+        .form-group {
+
+            margin-bottom: 20px;
+
+        }
+
+        label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: bold;
+
+            color: #333;
+
+        }
+
+        input {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            outline: none;
+
+        }
+
+        input:focus {
+
+            border-color: #1976d2;
+
+        }
+
+        button {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+        button:hover {
+
+            opacity: 0.9;
+
+        }
+
+        .send-btn {
+
+            background: #1976d2;
+
+        }
+
+        .otp-section {
+
+            display: none;
+
+            margin-top: 25px;
+
+        }
+
+        .verify-btn {
+
+            background: #43a047;
+
+        }
+
+        .change-btn {
+
+            display: none;
+
+            margin-top: 10px;
+
+            background: #757575;
+
+        }
+
+        .name-section {
+
+            display: none;
+
+            margin-top: 25px;
+
+        }
+
+        .create-btn {
+
+            background: #8e44ad;
+
+        }
+
+        .dashboard-btn {
+
+            display: none;
+
+            margin-top: 15px;
+
+            background: #00897b;
+
+        }
+
+        .message {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            font-weight: bold;
+
+        }
+
+        .success {
+
+            color: #2e7d32;
+
+        }
+
+        .error {
+
+            color: #d32f2f;
+
+        }
+
+        .note {
+
+            margin-top: 25px;
+
+            padding: 12px;
+
+            background: #fff8e1;
+
+            border-radius: 8px;
+
+            color: #795548;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            text-align: center;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="otp-container">
+
+
+    <div class="logo">
+        🥛
+    </div>
+
+
+    <div class="title">
+        Milk Dairy
+    </div>
+
+
+    <div class="subtitle">
+        Login or Create Account
+    </div>
+
+
+    <!-- CONTACT -->
+
+    <div class="form-group">
+
+        <label>
+            Mobile Number or Gmail
+        </label>
+
+        <input
+            type="text"
+            id="contact"
+            placeholder="Enter mobile number or Gmail">
+
+    </div>
+
+
+    <!-- SEND OTP -->
+
+    <button
+        class="send-btn"
+        onclick="sendOTP()">
+
+        Send OTP
+
+    </button>
+
+
+    <!-- OTP -->
+
+    <div
+        class="otp-section"
+        id="otpSection">
+
+        <div class="form-group">
+
+            <label>
+                Enter 6-Digit OTP
+            </label>
+
+            <input
+                type="text"
+                id="otp"
+                maxlength="6"
+                placeholder="Enter OTP">
+
+        </div>
+
+
+        <button
+            class="verify-btn"
+            onclick="verifyOTP()">
+
+            Verify OTP
+
+        </button>
+
+    </div>
+
+
+    <!-- NEW ACCOUNT -->
+
+    <div
+        class="name-section"
+        id="nameSection">
+
+        <div class="form-group">
+
+            <label>
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your full name">
+
+        </div>
+
+
+        <button
+            class="create-btn"
+            onclick="createAccount()">
+
+            Create Account
+
+        </button>
+
+    </div>
+
+
+    <!-- CHANGE -->
+
+    <button
+        id="changeBtn"
+        class="change-btn"
+        onclick="changeContact()">
+
+        Change Mobile / Gmail
+
+    </button>
+
+
+    <!-- MESSAGE -->
+
+    <div
+        id="message"
+        class="message">
+
+    </div>
+
+
+    <!-- DASHBOARD -->
+
+    <button
+        id="dashboardBtn"
+        class="dashboard-btn"
+        onclick="openDashboard()">
+
+        Go to Dashboard
+
+    </button>
+
+
+    <div class="note">
+
+        <strong>Testing Mode</strong><br>
+
+        A test OTP will appear in a popup.
+
+        Real SMS/Gmail OTP will be connected later.
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+/* ==========================================
+   DATABASE
+========================================== */
+
+const db = require("../database");
+
+
+/* ==========================================
+   OTP
+========================================== */
+
+let generatedOTP = "";
+
+let currentContact = "";
+
+
+/* ==========================================
+   SEND OTP
+========================================== */
+
+function sendOTP() {
+
+
+    const contact =
+        document
+            .getElementById("contact")
+            .value
+            .trim();
+
+
+    const message =
+        document.getElementById("message");
+
+
+    if (contact === "") {
+
+        message.innerText =
+            "Please enter your mobile number or Gmail.";
+
+        message.className =
+            "message error";
+
+        return;
+
+    }
+
+
+    const mobilePattern =
+        /^[6-9][0-9]{9}$/;
+
+
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+    const isMobile =
+        mobilePattern.test(contact);
+
+
+    const isEmail =
+        emailPattern.test(contact);
+
+
+    if (!isMobile && !isEmail) {
+
+        message.innerText =
+            "Please enter a valid mobile number or Gmail.";
+
+        message.className =
+            "message error";
+
+        return;
+
+    }
+
+
+    currentContact = contact;
+
+
+    generatedOTP =
+        Math.floor(
+            100000 +
+            Math.random() * 900000
+        ).toString();
+
+
+    document.getElementById(
+        "otpSection"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "changeBtn"
+    ).style.display = "block";
+
+
+    message.innerText =
+        "OTP generated successfully.";
+
+    message.className =
+        "message success";
+
+
+    alert(
+        "TEST OTP: " +
+        generatedOTP
+    );
+
+}
+
+
+/* ==========================================
+   VERIFY OTP
+========================================== */
+
+function verifyOTP() {
+
+
+    const enteredOTP =
+        document
+            .getElementById("otp")
+            .value
+            .trim();
+
+
+    const message =
+        document.getElementById("message");
+
+
+    if (enteredOTP === "") {
+
+        message.innerText =
+            "Please enter the OTP.";
+
+        message.className =
+            "message error";
+
+        return;
+
+    }
+
+
+    if (
+        enteredOTP !==
+        generatedOTP
+    ) {
+
+        message.innerText =
+            "Incorrect OTP. Please try again.";
+
+        message.className =
+            "message error";
+
+        return;
+
+    }
+
+
+    /*
+       OTP CORRECT
+    */
+
+
+    message.innerText =
+        "OTP verified successfully! ✅";
+
+    message.className =
+        "message success";
+
+
+    /*
+       CHECK ACCOUNT
+    */
+
+    db.get(
+        `
+        SELECT *
+
+        FROM accounts
+
+        WHERE contact = ?
+
+        LIMIT 1
+        `,
+        [currentContact],
+
+        function(err, account) {
+
+
+            if (err) {
+
+                message.innerText =
+                    "Database error: " +
+                    err.message;
+
+                message.className =
+                    "message error";
+
+                return;
+
+            }
+
+
+            /*
+               EXISTING ACCOUNT
+            */
+
+            if (account) {
+
+                loginAccount(account);
+
+                return;
+
+            }
+
+
+            /*
+               NEW ACCOUNT
+            */
+
+            document.getElementById(
+                "nameSection"
+            ).style.display =
+                "block";
+
+
+            document.getElementById(
+                "otp"
+            ).disabled = true;
+
+
+            message.innerText =
+                "New account detected. Please enter your name.";
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   CREATE NEW ACCOUNT
+========================================== */
+
+function createAccount() {
+
+
+    const name =
+        document
+            .getElementById("name")
+            .value
+            .trim();
+
+
+    const message =
+        document.getElementById("message");
+
+
+    if (name === "") {
+
+        message.innerText =
+            "Please enter your name.";
+
+        message.className =
+            "message error";
+
+        return;
+
+    }
+
+
+    const createdAt =
+        new Date().toISOString();
+
+
+    db.run(
+        `
+        INSERT INTO accounts
+        (
+            name,
+            contact,
+            email,
+            created_at
+        )
+
+        VALUES (?, ?, ?, ?)
+        `,
+        [
+            name,
+            currentContact,
+            isEmailContact(currentContact)
+                ? currentContact
+                : "",
+            createdAt
+        ],
+
+        function(err) {
+
+
+            if (err) {
+
+                message.innerText =
+                    "Account creation error: " +
+                    err.message;
+
+                message.className =
+                    "message error";
+
+                return;
+
+            }
+
+
+            /*
+               LOGIN
+            */
+
+            localStorage.setItem(
+                "loggedIn",
+                "true"
+            );
+
+
+            localStorage.setItem(
+                "loggedInContact",
+                currentContact
+            );
+
+
+            localStorage.setItem(
+                "loginTime",
+                new Date().toISOString()
+            );
+
+
+            message.innerText =
+                "Account created successfully! 🎉";
+
+            message.className =
+                "message success";
+
+
+            document.getElementById(
+                "nameSection"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "dashboardBtn"
+            ).style.display =
+                "block";
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   LOGIN EXISTING ACCOUNT
+========================================== */
+
+function loginAccount(account) {
+
+
+    localStorage.setItem(
+        "loggedIn",
+        "true"
+    );
+
+
+    localStorage.setItem(
+        "loggedInContact",
+        account.contact
+    );
+
+
+    localStorage.setItem(
+        "loginTime",
+        new Date().toISOString()
+    );
+
+
+    const message =
+        document.getElementById("message");
+
+
+    message.innerText =
+        "Welcome back, " +
+        account.name +
+        "! 👋";
+
+    message.className =
+        "message success";
+
+
+    document.getElementById(
+        "dashboardBtn"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "otp"
+    ).disabled = true;
+
+}
+
+
+/* ==========================================
+   CHECK EMAIL
+========================================== */
+
+function isEmailContact(contact) {
+
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(contact);
+
+}
+
+
+/* ==========================================
+   CHANGE CONTACT
+========================================== */
+
+function changeContact() {
+
+
+    document.getElementById(
+        "contact"
+    ).value = "";
+
+
+    document.getElementById(
+        "otp"
+    ).value = "";
+
+
+    document.getElementById(
+        "name"
+    ).value = "";
+
+
+    document.getElementById(
+        "otpSection"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "nameSection"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "changeBtn"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "dashboardBtn"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "message"
+    ).innerText = "";
+
+
+    generatedOTP = "";
+
+    currentContact = "";
+
+}
+
+
+/* ==========================================
+   OPEN DASHBOARD
+========================================== */
+
+function openDashboard() {
+
+    window.location.href =
+        "../index.html";
+
+}
+
+</script>
+
+
+</body>
+
+</html>
